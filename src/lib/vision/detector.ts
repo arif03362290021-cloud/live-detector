@@ -121,17 +121,19 @@ export class YoloDetector {
       const plane = MODEL_SIZE * MODEL_SIZE;
       const input = this.input;
       for (let i = 0; i < plane; i++) {
-        input[i] = data[i * 4] / 255;
-        input[i + plane] = data[i * 4 + 1] / 255;
-        input[i + 2 * plane] = data[i * 4 + 2] / 255;
+        input[i] = data[i * 4]! / 255;
+        input[i + plane] = data[i * 4 + 1]! / 255;
+        input[i + 2 * plane] = data[i * 4 + 2]! / 255;
       }
 
       // --- 3. Inference -------------------------------------------------
       const tensor = new this.ort.Tensor("float32", input, [1, 3, MODEL_SIZE, MODEL_SIZE]);
       const outputs = await this.session.run({ [this.inputName]: tensor });
-      const out = outputs[this.session.outputNames[0]] as OrtTensor;
+      const out = outputs[this.session.outputNames[0]!] as OrtTensor;
       const raw = out.data as Float32Array;
-      const [, channels, anchors] = out.dims as number[];
+      const dims = out.dims as number[];
+      const channels = dims[1] ?? 84;
+      const anchors = dims[2] ?? 8400;
       const numClasses = channels - 4;
 
       // --- 4. Decode + threshold ---------------------------------------
@@ -140,17 +142,17 @@ export class YoloDetector {
         let best = 0;
         let bestId = -1;
         for (let c = 0; c < numClasses; c++) {
-          const s = raw[(4 + c) * anchors + a];
+          const s = raw[(4 + c) * anchors + a] ?? 0;
           if (s > best) {
             best = s;
             bestId = c;
           }
         }
         if (bestId < 0 || best < scoreThreshold) continue;
-        const cx = raw[a];
-        const cy = raw[anchors + a];
-        const w = raw[2 * anchors + a];
-        const h = raw[3 * anchors + a];
+        const cx = raw[a] ?? 0;
+        const cy = raw[anchors + a] ?? 0;
+        const w = raw[2 * anchors + a] ?? 0;
+        const h = raw[3 * anchors + a] ?? 0;
         // Undo letterbox -> original frame pixels
         const x = (cx - w / 2 - padX) / scale;
         const y = (cy - h / 2 - padY) / scale;
