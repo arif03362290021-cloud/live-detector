@@ -1,7 +1,3 @@
-Act as a professional technical writer. 
-
-Create a complete, beautiful, and GitHub-ready README.md file for my project.
-
 Project Name: Object Tracker Stream
 Author: Syed Arif Shah
 Live Demo URL: https://live-track-cam.vercel.app
