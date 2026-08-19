@@ -14,7 +14,7 @@ Use these exact headings and order. Add emojis to headings.
 Add tech badges for React, Tailwind, TensorFlow.js
 
 ## 🌟 Demo
-Add placeholder for demo.gif and Live Demo link
+https://live-track-cam.vercel.app
 
 ## 📌 About The Project
 Explain what it does in 3 lines for CodeAlpha internship
